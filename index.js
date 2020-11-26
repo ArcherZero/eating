@@ -83,7 +83,7 @@ cron.schedule(`00 00 12 ${realWorkDay} * *`, () => {
   console.log('少吃点,不饿就行了');
   timeToDo('差不多去拿午饭了')
 });
-cron.schedule(`00 00 18 ${realWorkDay} * *`, () => {
+cron.schedule(`00 12 18 ${realWorkDay} * *`, () => {
   console.log('注意,千万别吃饱');
   timeToDo('好去拿晚饭了')
 });
