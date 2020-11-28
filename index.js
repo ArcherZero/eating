@@ -2,10 +2,11 @@ const request = require('request');
 const log4js = require('log4js');
 const cron = require("node-cron");
 const fs = require("fs");
+const dayjs = require('dayjs')
 const dataPath = './data.txt';
 const countPath = './count.txt';
+const sundayCountPath = './sundayCount.text'
 const { namePhoneMap } = require('./map.js')
-const { sumMonthDay, notWorkDay } = require('./dateConfig.js')
 
 const hookUrl = 'https://oapi.dingtalk.com/robot/send?access_token=0754a3f1adbb2fc6d6b7846e777dc1b830439561abc47ebaeec68d39fca287fd'
 
@@ -69,21 +70,26 @@ const timeToDo = (str) => {
   fetchNotice(`${currentName} ${str}`, currentPhone)
 }
 
-// 处理要上班的日期
-let realWorkDayArr = [] // 真正上班日期
-for (let i = 1; i <= sumMonthDay; i ++) {
-  if (notWorkDay.indexOf(i) < 0) {
-    realWorkDayArr.push(i)
+const isWorkDay = () => {
+  const weekDay = dayjs().day()
+  if (weekDay === 6) return false
+  if (weekDay === 7) {
+    let sundayCount = fs.readFileSync(sundayCountPath, {
+      encoding: 'utf-8'
+    })
+    sundayCount++
+    fs.writeFileSync(sundayCountPath, sundayCount)
+    return sundayCount%2 === 0
   }
+  return true
 }
-const realWorkDay = realWorkDayArr.join(',')
 
 // 定时任务
-cron.schedule(`00 00 12 ${realWorkDay} * *`, () => {
+cron.schedule(`00 00 12 * * *`, () => {
   console.log('少吃点,不饿就行了');
-  timeToDo('差不多去拿午饭了')
+  if (isWorkDay()) timeToDo('差不多去拿午饭了')
 });
-cron.schedule(`00 00 18 ${realWorkDay} * *`, () => {
+cron.schedule(`10 00 18 * * *`, () => {
   console.log('注意,千万别吃饱');
-  timeToDo('好去拿晚饭了')
+  if(isWorkDay()) timeToDo('好去拿晚饭了')
 });
