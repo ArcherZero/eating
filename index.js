@@ -77,12 +77,16 @@ const isWorkDay = () => {
     let sundayCount = fs.readFileSync(sundayCountPath, {
       encoding: 'utf-8'
     })
-    sundayCount++
+    let count = fs.readFileSync(countPath, {
+      encoding: 'utf-8'
+    })
+    if (count === 1) ++sundayCount
     fs.writeFileSync(sundayCountPath, sundayCount)
     return sundayCount%2 === 0
   }
   return true
 }
+
 
 // 定时任务
 cron.schedule(`00 00 12 * * *`, () => {
