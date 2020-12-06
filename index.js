@@ -73,15 +73,15 @@ const timeToDo = (str) => {
 const isWorkDay = () => {
   const weekDay = dayjs().day()
   if (weekDay === 6) return false
-  if (weekDay === 7) {
+  if (weekDay === 0) {
     let sundayCount = fs.readFileSync(sundayCountPath, {
       encoding: 'utf-8'
     })
     let count = fs.readFileSync(countPath, {
       encoding: 'utf-8'
     })
-    if (count === 1) ++sundayCount
-    fs.writeFileSync(sundayCountPath, sundayCount)
+    ++sundayCount
+    if (count === 1) fs.writeFileSync(sundayCountPath, sundayCount)
     return sundayCount%2 === 0
   }
   return true
